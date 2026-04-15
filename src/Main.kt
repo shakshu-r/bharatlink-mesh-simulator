@@ -10,7 +10,7 @@ fun main() {
     val C = Device("C")
     val D = Device("D")
 
-    // Connect devices (mesh)
+    // Create mesh connections
     A.connect(B)
     B.connect(C)
     C.connect(D)
