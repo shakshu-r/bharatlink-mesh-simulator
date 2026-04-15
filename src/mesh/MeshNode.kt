@@ -10,16 +10,19 @@ class MeshNode(val device: Device) {
 
     fun receive(message: Message) {
 
+        // Prevent duplicate forwarding
         if (seenMessages.contains(message.id)) return
         seenMessages.add(message.id)
 
         val decrypted = AESUtil.decrypt(message.content)
 
+        // If message reached destination
         if (device.id == message.receiver) {
             println("📩 ${device.id} received: $decrypted")
             return
         }
 
+        // Forward if TTL > 0
         if (message.ttl > 0) {
             message.ttl--
             forward(message)
