@@ -4,31 +4,62 @@ import models.Device
 import models.Message
 import models.MessageStatus
 import encryption.AESUtil
+import java.util.*
+import kotlin.concurrent.thread
 
 class MeshNode(val device: Device) {
 
     private val seenMessages = mutableSetOf<String>()
+    private val queue: Queue<Message> = LinkedList()
+    private var isProcessing = false
 
+    // Receive message → add to queue
     fun receive(message: Message) {
 
-        // Prevent duplicate messages
         if (seenMessages.contains(message.id)) return
         seenMessages.add(message.id)
 
-        // Decrypt message
+        queue.add(message)
+
+        processQueue()
+    }
+
+    // Process queue one by one
+    private fun processQueue() {
+
+        if (isProcessing) return
+        isProcessing = true
+
+        thread {
+            while (queue.isNotEmpty()) {
+
+                val message = queue.poll()
+
+                // Simulate delay (500ms–1500ms)
+                Thread.sleep((500..1500).random().toLong())
+
+                handleMessage(message)
+            }
+            isProcessing = false
+        }
+    }
+
+    private fun handleMessage(message: Message) {
+
         val decrypted = AESUtil.decrypt(message.content)
 
-        println("📡 Message ${message.id} reached ${device.id} (Hops: ${message.hops})")
+        println("📡 ${device.id} processing message ${message.id} (Hops: ${message.hops})")
 
-        // If message reached destination
+        // If destination reached
         if (device.id == message.receiver) {
             message.status = MessageStatus.DELIVERED
+
             println("📩 ${device.id} received: $decrypted")
-            println("✅ Message Delivered in ${message.hops} hops\n")
+            println("✅ Delivered in ${message.hops} hops\n")
             return
         }
 
-        // Forward message if TTL allows
+        // TTL check
         if (message.ttl > 0) {
             message.ttl--
             message.hops++
@@ -41,9 +72,10 @@ class MeshNode(val device: Device) {
     }
 
     private fun forward(message: Message) {
+
         for (neighbor in device.neighbors) {
 
-            println("🔁 ${device.id} → forwarding to ${neighbor.id}")
+            println("🔁 ${device.id} → ${neighbor.id} (queued)")
 
             MeshNode(neighbor).receive(message)
         }
