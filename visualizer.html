@@ -3,74 +3,112 @@
 <head>
     <title>BharatLink Visualizer</title>
 </head>
-<body style="background:black; color:white; text-align:center;">
+
+<body style="background:#0a0a0a; color:white; text-align:center; font-family:Arial;">
 
 <h1>🚀 BharatLink Mesh Network</h1>
+<p>Offline Multi-Hop Communication Simulation</p>
 
-<canvas id="network" width="500" height="400"></canvas>
+<canvas id="network" width="700" height="450"></canvas>
 
 <script>
 const canvas = document.getElementById("network");
 const ctx = canvas.getContext("2d");
 
+// Nodes (mesh layout)
 const nodes = {
     A: {x:100,y:200},
-    B: {x:200,y:100},
-    C: {x:300,y:200},
-    D: {x:400,y:300}
+    B: {x:250,y:100},
+    C: {x:400,y:200},
+    D: {x:550,y:300}
 };
 
-function drawNode(name, x, y, color="white") {
-    ctx.fillStyle = color;
+// Connections (mesh links)
+const links = [
+    ["A","B"],
+    ["B","C"],
+    ["C","D"],
+    ["A","C"] // extra mesh path
+];
+
+// Draw node
+function drawNode(name, x, y, active=false) {
+    ctx.fillStyle = active ? "#00ff88" : "#ffffff";
     ctx.beginPath();
-    ctx.arc(x,y,20,0,Math.PI*2);
+    ctx.arc(x,y,22,0,Math.PI*2);
     ctx.fill();
-    ctx.fillStyle="black";
-    ctx.fillText(name,x-5,y+5);
+
+    ctx.fillStyle = "#000";
+    ctx.font = "14px Arial";
+    ctx.fillText(name, x-5, y+5);
 }
 
-function drawLine(a,b){
-    ctx.strokeStyle="gray";
-    ctx.beginPath();
-    ctx.moveTo(a.x,a.y);
-    ctx.lineTo(b.x,b.y);
-    ctx.stroke();
+// Draw connections
+function drawLinks() {
+    ctx.strokeStyle = "#555";
+    ctx.lineWidth = 2;
+
+    links.forEach(([a,b]) => {
+        ctx.beginPath();
+        ctx.moveTo(nodes[a].x, nodes[a].y);
+        ctx.lineTo(nodes[b].x, nodes[b].y);
+        ctx.stroke();
+    });
 }
 
-drawLine(nodes.A,nodes.B);
-drawLine(nodes.B,nodes.C);
-drawLine(nodes.C,nodes.D);
+// Draw all nodes
+function drawAllNodes(activeNode=null) {
+    for (let n in nodes) {
+        drawNode(n, nodes[n].x, nodes[n].y, n===activeNode);
+    }
+}
 
-drawNode("A",100,200);
-drawNode("B",200,100);
-drawNode("C",300,200);
-drawNode("D",400,300);
-
-// Animation
+// Packet animation (REAL movement 🔥)
+let path = ["A","B","C","D"];
 let step = 0;
-const path = ["A","B","C","D"];
+let progress = 0;
 
-function animate(){
-    ctx.clearRect(0,0,500,400);
+function animatePacket() {
 
-    drawLine(nodes.A,nodes.B);
-    drawLine(nodes.B,nodes.C);
-    drawLine(nodes.C,nodes.D);
+    ctx.clearRect(0,0,700,450);
 
-    for (let n in nodes){
-        drawNode(n,nodes[n].x,nodes[n].y);
+    drawLinks();
+    drawAllNodes(path[step]);
+
+    if(step < path.length - 1) {
+
+        let start = nodes[path[step]];
+        let end = nodes[path[step+1]];
+
+        // Move packet smoothly
+        let x = start.x + (end.x - start.x) * progress;
+        let y = start.y + (end.y - start.y) * progress;
+
+        ctx.fillStyle = "#00ff88";
+        ctx.beginPath();
+        ctx.arc(x,y,10,0,Math.PI*2);
+        ctx.fill();
+
+        progress += 0.02;
+
+        if(progress >= 1) {
+            progress = 0;
+            step++;
+        }
+
+    } else {
+        // Reset animation loop
+        setTimeout(() => {
+            step = 0;
+            progress = 0;
+        }, 1500);
     }
 
-    if(step < path.length){
-        let node = nodes[path[step]];
-        drawNode(path[step], node.x, node.y, "green");
-        step++;
-    }
-
-    setTimeout(animate,1000);
+    requestAnimationFrame(animatePacket);
 }
 
-animate();
+animatePacket();
+
 </script>
 
 </body>
