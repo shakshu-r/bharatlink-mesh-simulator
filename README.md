@@ -1,26 +1,18 @@
-# BharatLink Mesh Simulator 🚀
+# 🚀 BharatLink Mesh Simulator
 
-A Kotlin-based simulation of a decentralized offline communication system.
+> Secure Offline Communication System using Mesh Networking
 
-## 🔥 Features
-- Peer-to-peer mesh networking
-- Multi-hop message forwarding
-- Encrypted messaging (Base64 simulation)
-- TTL-based routing
-- Duplicate message prevention
+---
 
-## ⚙️ How It Works
-Devices form a mesh network and relay messages across nodes without internet.
+## 🌐 What is BharatLink?
 
-## 📡 Demo Flow
-A → B → C → D
+BharatLink is a decentralized communication system that works **without internet or mobile networks**.
 
-## 🎯 Use Cases
-- Disaster communication
-- Rural connectivity
-- Offline messaging
+It uses:
+- 📡 Peer-to-peer connections
+- 🔁 Multi-hop message forwarding
+- 🔐 Encrypted messaging
 
-## 🚀 Future Scope
-- Real Bluetooth integration
-- Android app development
-- SOS priority routing
+---
+
+## ⚡ How It Works
