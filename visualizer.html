@@ -1,113 +1,147 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>BharatLink Visualizer</title>
+    <title>BharatLink Advanced Simulator</title>
 </head>
 
-<body style="background:#0a0a0a; color:white; text-align:center; font-family:Arial;">
+<body style="background:#050505; color:white; font-family:Arial; text-align:center;">
 
 <h1>🚀 BharatLink Mesh Network</h1>
-<p>Offline Multi-Hop Communication Simulation</p>
+<p>Real-Time Offline Communication Simulation</p>
 
-<canvas id="network" width="700" height="450"></canvas>
+<canvas id="network" width="800" height="500"></canvas>
+
+<p id="stats"></p>
 
 <script>
 const canvas = document.getElementById("network");
 const ctx = canvas.getContext("2d");
 
-// Nodes (mesh layout)
+// Nodes
 const nodes = {
-    A: {x:100,y:200},
-    B: {x:250,y:100},
-    C: {x:400,y:200},
-    D: {x:550,y:300}
+    A:{x:100,y:250},
+    B:{x:250,y:100},
+    C:{x:400,y:250},
+    D:{x:550,y:100},
+    E:{x:700,y:300}
 };
 
-// Connections (mesh links)
+// Mesh links
 const links = [
-    ["A","B"],
-    ["B","C"],
-    ["C","D"],
-    ["A","C"] // extra mesh path
+    ["A","B"],["A","C"],
+    ["B","C"],["B","D"],
+    ["C","D"],["C","E"],
+    ["D","E"]
 ];
 
-// Draw node
-function drawNode(name, x, y, active=false) {
-    ctx.fillStyle = active ? "#00ff88" : "#ffffff";
-    ctx.beginPath();
-    ctx.arc(x,y,22,0,Math.PI*2);
-    ctx.fill();
-
-    ctx.fillStyle = "#000";
-    ctx.font = "14px Arial";
-    ctx.fillText(name, x-5, y+5);
-}
-
-// Draw connections
-function drawLinks() {
-    ctx.strokeStyle = "#555";
-    ctx.lineWidth = 2;
-
-    links.forEach(([a,b]) => {
+// Draw links
+function drawLinks(){
+    ctx.strokeStyle="#444";
+    links.forEach(([a,b])=>{
         ctx.beginPath();
-        ctx.moveTo(nodes[a].x, nodes[a].y);
-        ctx.lineTo(nodes[b].x, nodes[b].y);
+        ctx.moveTo(nodes[a].x,nodes[a].y);
+        ctx.lineTo(nodes[b].x,nodes[b].y);
         ctx.stroke();
     });
 }
 
-// Draw all nodes
-function drawAllNodes(activeNode=null) {
-    for (let n in nodes) {
-        drawNode(n, nodes[n].x, nodes[n].y, n===activeNode);
-    }
-}
-
-// Packet animation (REAL movement 🔥)
-let path = ["A","B","C","D"];
-let step = 0;
-let progress = 0;
-
-function animatePacket() {
-
-    ctx.clearRect(0,0,700,450);
-
-    drawLinks();
-    drawAllNodes(path[step]);
-
-    if(step < path.length - 1) {
-
-        let start = nodes[path[step]];
-        let end = nodes[path[step+1]];
-
-        // Move packet smoothly
-        let x = start.x + (end.x - start.x) * progress;
-        let y = start.y + (end.y - start.y) * progress;
-
-        ctx.fillStyle = "#00ff88";
+// Draw nodes
+function drawNodes(){
+    for(let n in nodes){
+        ctx.fillStyle="#fff";
         ctx.beginPath();
-        ctx.arc(x,y,10,0,Math.PI*2);
+        ctx.arc(nodes[n].x,nodes[n].y,20,0,Math.PI*2);
         ctx.fill();
 
-        progress += 0.02;
-
-        if(progress >= 1) {
-            progress = 0;
-            step++;
-        }
-
-    } else {
-        // Reset animation loop
-        setTimeout(() => {
-            step = 0;
-            progress = 0;
-        }, 1500);
+        ctx.fillStyle="#000";
+        ctx.fillText(n,nodes[n].x-5,nodes[n].y+5);
     }
-
-    requestAnimationFrame(animatePacket);
 }
 
-animatePacket();
+// Get neighbors
+function getNeighbors(node){
+    return links
+        .filter(l=>l.includes(node))
+        .map(l=>l[0]===node?l[1]:l[0]);
+}
+
+// Packet system
+let packets = [];
+let totalPackets = 0;
+
+function createPacket(priority=false){
+    const keys = Object.keys(nodes);
+    let start = keys[Math.floor(Math.random()*keys.length)];
+    let end = keys[Math.floor(Math.random()*keys.length)];
+
+    if(start===end) return;
+
+    packets.push({
+        path:[start],
+        target:end,
+        progress:0,
+        priority:priority,
+        hops:0
+    });
+
+    totalPackets++;
+}
+
+// Create packets continuously
+setInterval(()=>createPacket(false), 1500);
+
+// SOS packets
+setInterval(()=>createPacket(true), 5000);
+
+// Animate
+function animate(){
+    ctx.clearRect(0,0,800,500);
+
+    drawLinks();
+    drawNodes();
+
+    packets.forEach((p,index)=>{
+
+        let current = p.path[p.path.length-1];
+
+        if(current === p.target){
+            packets.splice(index,1);
+            return;
+        }
+
+        let neighbors = getNeighbors(current);
+        let next = neighbors[Math.floor(Math.random()*neighbors.length)];
+
+        let start = nodes[current];
+        let end = nodes[next];
+
+        let x = start.x + (end.x-start.x)*p.progress;
+        let y = start.y + (end.y-start.y)*p.progress;
+
+        ctx.fillStyle = p.priority ? "red" : "#00ff88";
+        ctx.beginPath();
+        ctx.arc(x,y,8,0,Math.PI*2);
+        ctx.fill();
+
+        p.progress += 0.02;
+
+        if(p.progress >= 1){
+            p.progress = 0;
+            p.path.push(next);
+            p.hops++;
+        }
+
+    });
+
+    // Stats
+    document.getElementById("stats").innerHTML =
+        "📦 Packets: "+packets.length+
+        " | 🚀 Total Sent: "+totalPackets;
+
+    requestAnimationFrame(animate);
+}
+
+animate();
 
 </script>
 
