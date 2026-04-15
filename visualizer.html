@@ -8,20 +8,31 @@
 
 <h1>🚀 BharatLink Mesh Network</h1>
 
-<div style="margin:10px;">
+<div style="margin:15px; padding:10px; background:#111; border-radius:10px; display:inline-block;">
 
-    From:
-    <select id="from"></select>
+    <label>From:</label>
+    <select id="from" style="margin:5px; padding:5px;"></select>
 
-    To:
-    <select id="to"></select>
+    <label>To:</label>
+    <select id="to" style="margin:5px; padding:5px;"></select>
 
-    <button onclick="sendPacket(false)">Send Message</button>
-    <button onclick="sendPacket(true)">🚨 SOS</button>
+    <br><br>
 
-    <button onclick="togglePause()">⏯ Pause/Resume</button>
+    <button onclick="sendPacket(false)" style="padding:8px 12px; margin:5px; background:#00aa66; color:white; border:none; border-radius:5px;">
+        Send Message
+    </button>
 
-    Speed:
+    <button onclick="sendPacket(true)" style="padding:8px 12px; margin:5px; background:red; color:white; border:none; border-radius:5px;">
+        🚨 SOS
+    </button>
+
+    <button onclick="togglePause()" style="padding:8px 12px; margin:5px; background:#555; color:white; border:none; border-radius:5px;">
+        ⏯ Pause/Resume
+    </button>
+
+    <br><br>
+
+    <label>Speed:</label>
     <input type="range" min="1" max="5" value="2" id="speed">
 
 </div>
@@ -55,7 +66,7 @@ Object.keys(nodes).forEach(n=>{
     toSelect.innerHTML += `<option>${n}</option>`;
 });
 
-// Mesh links
+// Links
 const links = [
     ["A","B"],["A","C"],
     ["B","C"],["B","D"],
@@ -91,7 +102,7 @@ function getNeighbors(node){
         .map(l=>l[0]===node?l[1]:l[0]);
 }
 
-// Packet system
+// Packets
 let packets = [];
 let totalPackets = 0;
 
