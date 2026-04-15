@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>BharatLink Control Simulator</title>
+    <title>BharatLink Smart Simulator</title>
 </head>
 
 <body style="background:#050505; color:white; font-family:Arial; text-align:center;">
@@ -11,10 +11,10 @@
 <div style="margin:15px; padding:10px; background:#111; border-radius:10px; display:inline-block;">
 
     <label>From:</label>
-    <select id="from" style="margin:5px; padding:5px;"></select>
+    <select id="from"></select>
 
     <label>To:</label>
-    <select id="to" style="margin:5px; padding:5px;"></select>
+    <select id="to"></select>
 
     <br><br>
 
@@ -46,7 +46,6 @@ const canvas = document.getElementById("network");
 const ctx = canvas.getContext("2d");
 
 let paused = false;
-let speed = 2;
 
 // Nodes
 const nodes = {
@@ -57,7 +56,7 @@ const nodes = {
     E:{x:700,y:300}
 };
 
-// Populate dropdowns
+// Dropdowns
 const fromSelect = document.getElementById("from");
 const toSelect = document.getElementById("to");
 
@@ -74,6 +73,7 @@ const links = [
     ["D","E"]
 ];
 
+// Draw links
 function drawLinks(){
     ctx.strokeStyle="#444";
     links.forEach(([a,b])=>{
@@ -84,6 +84,7 @@ function drawLinks(){
     });
 }
 
+// Draw nodes
 function drawNodes(){
     for(let n in nodes){
         ctx.fillStyle="#fff";
@@ -96,38 +97,67 @@ function drawNodes(){
     }
 }
 
+// Get neighbors
 function getNeighbors(node){
     return links
         .filter(l=>l.includes(node))
         .map(l=>l[0]===node?l[1]:l[0]);
 }
 
+// 🔥 SHORTEST PATH (BFS)
+function findPath(start, target){
+    let queue = [[start]];
+    let visited = new Set();
+
+    while(queue.length > 0){
+        let path = queue.shift();
+        let node = path[path.length - 1];
+
+        if(node === target) return path;
+
+        if(!visited.has(node)){
+            visited.add(node);
+
+            let neighbors = getNeighbors(node);
+            neighbors.forEach(n=>{
+                queue.push([...path, n]);
+            });
+        }
+    }
+    return null;
+}
+
 // Packets
 let packets = [];
 let totalPackets = 0;
 
+// Send packet
 function sendPacket(priority=false){
     let start = fromSelect.value;
     let end = toSelect.value;
 
     if(start === end) return;
 
+    let path = findPath(start, end);
+
+    if(!path) return;
+
     packets.push({
-        path:[start],
-        target:end,
-        progress:0,
-        priority:priority,
-        hops:0
+        path: path,
+        step: 0,
+        progress: 0,
+        priority: priority
     });
 
     totalPackets++;
 }
 
+// Pause
 function togglePause(){
     paused = !paused;
 }
 
-// Animation
+// Animate
 function animate(){
 
     if(paused){
@@ -135,7 +165,7 @@ function animate(){
         return;
     }
 
-    speed = document.getElementById("speed").value;
+    let speed = document.getElementById("speed").value;
 
     ctx.clearRect(0,0,800,500);
 
@@ -144,18 +174,13 @@ function animate(){
 
     packets.forEach((p,index)=>{
 
-        let current = p.path[p.path.length-1];
-
-        if(current === p.target){
+        if(p.step >= p.path.length - 1){
             packets.splice(index,1);
             return;
         }
 
-        let neighbors = getNeighbors(current);
-        let next = neighbors[Math.floor(Math.random()*neighbors.length)];
-
-        let start = nodes[current];
-        let end = nodes[next];
+        let start = nodes[p.path[p.step]];
+        let end = nodes[p.path[p.step+1]];
 
         let x = start.x + (end.x-start.x)*p.progress;
         let y = start.y + (end.y-start.y)*p.progress;
@@ -169,8 +194,7 @@ function animate(){
 
         if(p.progress >= 1){
             p.progress = 0;
-            p.path.push(next);
-            p.hops++;
+            p.step++;
         }
 
     });
