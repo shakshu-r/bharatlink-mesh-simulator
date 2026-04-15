@@ -14,6 +14,7 @@ class MeshNetwork {
     }
 
     fun sendMessage(sender: String, receiver: String, text: String) {
+
         val encrypted = AESUtil.encrypt(text)
 
         val message = Message(
