@@ -1,13 +1,30 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>BharatLink Advanced Simulator</title>
+    <title>BharatLink Control Simulator</title>
 </head>
 
 <body style="background:#050505; color:white; font-family:Arial; text-align:center;">
 
 <h1>🚀 BharatLink Mesh Network</h1>
-<p>Real-Time Offline Communication Simulation</p>
+
+<div style="margin:10px;">
+
+    From:
+    <select id="from"></select>
+
+    To:
+    <select id="to"></select>
+
+    <button onclick="sendPacket(false)">Send Message</button>
+    <button onclick="sendPacket(true)">🚨 SOS</button>
+
+    <button onclick="togglePause()">⏯ Pause/Resume</button>
+
+    Speed:
+    <input type="range" min="1" max="5" value="2" id="speed">
+
+</div>
 
 <canvas id="network" width="800" height="500"></canvas>
 
@@ -16,6 +33,9 @@
 <script>
 const canvas = document.getElementById("network");
 const ctx = canvas.getContext("2d");
+
+let paused = false;
+let speed = 2;
 
 // Nodes
 const nodes = {
@@ -26,6 +46,15 @@ const nodes = {
     E:{x:700,y:300}
 };
 
+// Populate dropdowns
+const fromSelect = document.getElementById("from");
+const toSelect = document.getElementById("to");
+
+Object.keys(nodes).forEach(n=>{
+    fromSelect.innerHTML += `<option>${n}</option>`;
+    toSelect.innerHTML += `<option>${n}</option>`;
+});
+
 // Mesh links
 const links = [
     ["A","B"],["A","C"],
@@ -34,7 +63,6 @@ const links = [
     ["D","E"]
 ];
 
-// Draw links
 function drawLinks(){
     ctx.strokeStyle="#444";
     links.forEach(([a,b])=>{
@@ -45,7 +73,6 @@ function drawLinks(){
     });
 }
 
-// Draw nodes
 function drawNodes(){
     for(let n in nodes){
         ctx.fillStyle="#fff";
@@ -58,7 +85,6 @@ function drawNodes(){
     }
 }
 
-// Get neighbors
 function getNeighbors(node){
     return links
         .filter(l=>l.includes(node))
@@ -69,12 +95,11 @@ function getNeighbors(node){
 let packets = [];
 let totalPackets = 0;
 
-function createPacket(priority=false){
-    const keys = Object.keys(nodes);
-    let start = keys[Math.floor(Math.random()*keys.length)];
-    let end = keys[Math.floor(Math.random()*keys.length)];
+function sendPacket(priority=false){
+    let start = fromSelect.value;
+    let end = toSelect.value;
 
-    if(start===end) return;
+    if(start === end) return;
 
     packets.push({
         path:[start],
@@ -87,14 +112,20 @@ function createPacket(priority=false){
     totalPackets++;
 }
 
-// Create packets continuously
-setInterval(()=>createPacket(false), 1500);
+function togglePause(){
+    paused = !paused;
+}
 
-// SOS packets
-setInterval(()=>createPacket(true), 5000);
-
-// Animate
+// Animation
 function animate(){
+
+    if(paused){
+        requestAnimationFrame(animate);
+        return;
+    }
+
+    speed = document.getElementById("speed").value;
+
     ctx.clearRect(0,0,800,500);
 
     drawLinks();
@@ -123,7 +154,7 @@ function animate(){
         ctx.arc(x,y,8,0,Math.PI*2);
         ctx.fill();
 
-        p.progress += 0.02;
+        p.progress += 0.01 * speed;
 
         if(p.progress >= 1){
             p.progress = 0;
@@ -133,16 +164,14 @@ function animate(){
 
     });
 
-    // Stats
     document.getElementById("stats").innerHTML =
-        "📦 Packets: "+packets.length+
+        "📦 Active: "+packets.length+
         " | 🚀 Total Sent: "+totalPackets;
 
     requestAnimationFrame(animate);
 }
 
 animate();
-
 </script>
 
 </body>
