@@ -1,5 +1,10 @@
 # 🚀 BharatLink: Secure Offline Communication System
 
+![Status](https://img.shields.io/badge/status-active-success)
+![Tech](https://img.shields.io/badge/tech-Kotlin-blue)
+![Platform](https://img.shields.io/badge/platform-offline--mesh-orange)
+![License](https://img.shields.io/badge/license-MIT-green)
+
 > A decentralized, offline-first communication system using mesh networking and encryption
 
 ---
@@ -8,7 +13,7 @@
 
 **BharatLink** is a secure communication system that enables devices to exchange messages **without internet or mobile networks**.
 
-It works by creating a **peer-to-peer mesh network**, where each device acts as a node and forwards messages until they reach the destination.
+It uses a **peer-to-peer mesh network**, where each device forwards messages until they reach the destination.
 
 ---
 
@@ -23,9 +28,9 @@ Traditional communication systems depend on:
 
 * Network failure during disasters
 * Poor connectivity in rural areas
-* Network congestion in crowded events
+* Network congestion
 
-👉 Result: Communication breakdown when it’s needed the most.
+👉 Communication becomes unreliable when it is needed most.
 
 ---
 
@@ -33,10 +38,10 @@ Traditional communication systems depend on:
 
 BharatLink provides:
 
-* 📡 Offline communication using mesh networking
+* 📡 Offline communication
 * 🔁 Multi-hop message forwarding
-* 🔐 Secure messaging with encryption
-* ⚡ Low-power, low-bandwidth operation
+* 🔐 Encrypted messaging
+* ⚡ Low bandwidth usage
 
 ---
 
@@ -48,33 +53,35 @@ A → B → C → D
 
 * Devices connect locally
 * Messages are encrypted
-* Each node forwards the message
-* Destination receives it successfully
+* Nodes forward messages
+* Destination receives it
 
 ---
 
-## 🧩 System Architecture
+## 📊 Network Diagram
 
-* 📱 Nodes = Devices
-* 🔗 Links = Peer-to-peer connections
-* 🔁 Routing = Multi-hop forwarding
-* 🔐 Security = Encrypted payload
+```
+        [A]
+       /   \
+     [B]   [C]
+      |   /   \
+     [D]------[E]
+
+Example Path:
+A → C → E
+```
 
 ---
 
 ## 🖥️ Live Simulation Demo
 
-We built a **visual mesh network simulator** to demonstrate the system:
+Interactive mesh network simulator with:
 
-### 🔥 Features:
-
-* Interactive UI (select sender & receiver)
-* Real-time packet animation
-* Shortest-path routing (BFS)
-* SOS priority packets (🚨)
-* Speed control & pause/resume
-
-👉 Shows how messages travel across the network dynamically.
+* 🎮 Sender/Receiver controls
+* 🚀 Packet animation
+* 🔁 Smart routing (Shortest Path - BFS)
+* 🚨 SOS priority messages
+* ⏯ Pause & speed control
 
 ---
 
@@ -86,15 +93,15 @@ Send: A → E
 Path: A → C → E
 ```
 
-✔ Direct routing if available
-✔ Multi-hop only when required
+✔ Direct routing when possible
+✔ Multi-hop only when needed
 
 ---
 
 ## 🔐 Security
 
 * AES-based encryption (simulated)
-* Prevents:
+* Protects against:
 
   * Unauthorized access
   * Message tampering
@@ -103,11 +110,11 @@ Path: A → C → E
 
 ## ⭐ Key Features
 
-* ✅ Works without internet
-* ✅ Mesh networking (peer-to-peer)
-* ✅ Multi-hop communication
+* ✅ Offline communication
+* ✅ Mesh networking
+* ✅ Multi-hop routing
 * ✅ Secure messaging
-* ✅ SOS emergency routing
+* ✅ SOS alerts
 * ✅ Real-time visualization
 
 ---
@@ -116,47 +123,44 @@ Path: A → C → E
 
 ### 🚨 Disaster Management
 
-* Communication when networks fail
-* Rescue coordination
+Communication when networks fail
 
-### 🌾 Rural Areas
+### 🌾 Rural Connectivity
 
-* No tower required
-* Local connectivity
+No towers required
 
 ### 🏫 Schools & Campuses
 
-* Alerts & announcements
-* Smart attendance systems
+Alerts & communication
 
-### 🪖 Defense & Security
+### 🪖 Defense Systems
 
-* Secure offline communication
+Secure offline messaging
 
 ---
 
 ## 🛠️ Tech Stack
 
-* **Kotlin** (Backend simulation logic)
-* **HTML + JavaScript** (Visualization UI)
-* **Canvas API** (Network rendering)
-* **Graph Algorithms (BFS)** (Routing)
+* Kotlin (Core Logic)
+* HTML + JavaScript (UI)
+* Canvas API (Visualization)
+* BFS Algorithm (Routing)
 
 ---
 
 ## 🚀 Future Scope
 
-* 📱 Android app with Bluetooth integration
-* 🌐 Real device mesh networking
-* 🆘 Advanced SOS priority system
-* 📁 Offline file transfer
-* 📊 Network analytics dashboard
+* 📱 Android Bluetooth integration
+* 🌐 Real mesh networking
+* 🆘 Advanced SOS system
+* 📁 Offline file sharing
+* 📊 Network analytics
 
 ---
 
 ## 📊 Project Status
 
-🚧 Prototype + Simulation Complete
+🚧 Prototype Complete
 🔥 Hackathon Ready
 
 ---
@@ -176,4 +180,4 @@ To build a **resilient communication system for India** that works even when tra
 
 ---
 
-⭐ If you like this project, consider giving it a star!
+⭐ Star this repo if you found it interesting!
