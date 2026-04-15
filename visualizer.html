@@ -65,7 +65,7 @@ Object.keys(nodes).forEach(n=>{
     toSelect.innerHTML += `<option>${n}</option>`;
 });
 
-// Links
+// Links (mesh)
 const links = [
     ["A","B"],["A","C"],
     ["B","C"],["B","D"],
@@ -104,7 +104,7 @@ function getNeighbors(node){
         .map(l=>l[0]===node?l[1]:l[0]);
 }
 
-// 🔥 SHORTEST PATH (BFS)
+// Shortest path (BFS)
 function findPath(start, target){
     let queue = [[start]];
     let visited = new Set();
@@ -131,14 +131,24 @@ function findPath(start, target){
 let packets = [];
 let totalPackets = 0;
 
-// Send packet
+// 🔥 FIXED SEND FUNCTION (DIRECT PRIORITY)
 function sendPacket(priority=false){
+
     let start = fromSelect.value;
     let end = toSelect.value;
 
     if(start === end) return;
 
-    let path = findPath(start, end);
+    let neighbors = getNeighbors(start);
+
+    let path;
+
+    // ✅ Direct connection priority
+    if(neighbors.includes(end)){
+        path = [start, end];
+    } else {
+        path = findPath(start, end);
+    }
 
     if(!path) return;
 
@@ -157,7 +167,7 @@ function togglePause(){
     paused = !paused;
 }
 
-// Animate
+// Animation
 function animate(){
 
     if(paused){
