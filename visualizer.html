@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>BharatLink Visualizer</title>
+</head>
+<body style="background:black; color:white; text-align:center;">
+
+<h1>🚀 BharatLink Mesh Network</h1>
+
+<canvas id="network" width="500" height="400"></canvas>
+
+<script>
+const canvas = document.getElementById("network");
+const ctx = canvas.getContext("2d");
+
+const nodes = {
+    A: {x:100,y:200},
+    B: {x:200,y:100},
+    C: {x:300,y:200},
+    D: {x:400,y:300}
+};
+
+function drawNode(name, x, y, color="white") {
+    ctx.fillStyle = color;
+    ctx.beginPath();
+    ctx.arc(x,y,20,0,Math.PI*2);
+    ctx.fill();
+    ctx.fillStyle="black";
+    ctx.fillText(name,x-5,y+5);
+}
+
+function drawLine(a,b){
+    ctx.strokeStyle="gray";
+    ctx.beginPath();
+    ctx.moveTo(a.x,a.y);
+    ctx.lineTo(b.x,b.y);
+    ctx.stroke();
+}
+
+drawLine(nodes.A,nodes.B);
+drawLine(nodes.B,nodes.C);
+drawLine(nodes.C,nodes.D);
+
+drawNode("A",100,200);
+drawNode("B",200,100);
+drawNode("C",300,200);
+drawNode("D",400,300);
+
+// Animation
+let step = 0;
+const path = ["A","B","C","D"];
+
+function animate(){
+    ctx.clearRect(0,0,500,400);
+
+    drawLine(nodes.A,nodes.B);
+    drawLine(nodes.B,nodes.C);
+    drawLine(nodes.C,nodes.D);
+
+    for (let n in nodes){
+        drawNode(n,nodes[n].x,nodes[n].y);
+    }
+
+    if(step < path.length){
+        let node = nodes[path[step]];
+        drawNode(path[step], node.x, node.y, "green");
+        step++;
+    }
+
+    setTimeout(animate,1000);
+}
+
+animate();
+</script>
+
+</body>
+</html>
