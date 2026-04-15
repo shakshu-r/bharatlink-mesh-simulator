@@ -24,8 +24,9 @@ class MeshNetwork {
             content = encrypted
         )
 
-        println("🚀 Sending message from $sender to $receiver")
-        println("🔐 Encrypted: $encrypted\n")
+        println("\n🚀 NEW MESSAGE INITIATED")
+        println("📤 From: $sender → To: $receiver")
+        println("🔐 Encrypted Payload: $encrypted\n")
 
         nodes[sender]?.receive(message)
     }
